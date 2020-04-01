@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-module Lib (jsonParser) where
+module Lib where
 
 import Data.Functor
 import Data.Foldable
@@ -19,7 +19,12 @@ jsonParser = do
     hFlush stdout
     x <- getLine
     y <- readFile x
-    print (parse json y)
+    let c = printJSON (parse json y)
+    putStr "Enter the output file name: "
+    hFlush stdout
+    z <- getLine
+    putStrLn c
+    writeFile z c
 
 newtype Parser a = P { parse :: String -> ParseResult a}
 
@@ -227,3 +232,30 @@ jsonObject = JSObject <$> betweenSepBy '{' '}' ',' kvs
 
 json :: Parser JSON
 json = choice [jsonNull, jsonBool, jsonString, jsonNumber, jsonArray, jsonObject]
+
+pPrintJSON :: Int -> JSON -> String
+pPrintJSON _ JSNull = "null"
+pPrintJSON _ (JSBool x) = if x then "true" else "false"
+pPrintJSON _ (JSString x) = show x
+pPrintJSON _ (JSNumber x) = show x
+pPrintJSON n (JSArray x)
+    | sum (map (length . pPrintJSON 0) x) < 80 = printVal pPrintJSON True 0 '[' ']' x
+    | otherwise = printVal pPrintJSON False n '[' ']' x
+pPrintJSON n (JSObject x) = printVal print' False n '{' '}' x
+    where print' n (a, b) = show a ++ " : " ++ pPrintJSON n b
+
+indent :: Int -> String
+indent n = replicate n '\t'
+
+returnIndent :: Int -> String
+returnIndent n = "\n" ++ indent n
+
+printVal :: Show a => (Int -> a -> String) -> Bool -> Int -> Char -> Char -> [a] -> String
+printVal _ _ _ a b [] = [a,b]
+printVal f t n a b (x:xs) = [a] ++ elm t n x ++ foldr (\i j -> ", " ++ elm t n i ++ j) "" xs ++ end t
+    where elm g m e = if g then f m e else returnIndent (m + 1) ++ f (m + 1) e
+          end g = if g then [b] else returnIndent n ++ [b]
+
+printJSON :: ParseResult JSON -> String
+printJSON (Result x _) = pPrintJSON 0 x
+printJSON y            = show y
