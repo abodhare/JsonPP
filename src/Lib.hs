@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-module Lib (app) where
+module Lib where
 
 import Data.Functor
 import Data.Foldable
