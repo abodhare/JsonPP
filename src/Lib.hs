@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-module Lib where
+module Lib (app) where
 
 import Data.Functor
 import Data.Foldable
@@ -7,24 +7,63 @@ import Data.List
 import Data.Char
 import Numeric
 import Control.Monad
+import Control.Monad.Fail
 import Control.Applicative
-import System.IO
+import System.Environment
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+app :: IO ()
+app = do
+  args <- getArgs
+  case args of
+    [] -> help
+    ["--help"] -> help
+    _ -> main' args
 
-jsonParser :: IO ()
-jsonParser = do
-    putStr "Enter a file name: "
-    hFlush stdout
-    x <- getLine
-    y <- readFile x
-    let c = printJSON (parse json y)
-    putStr "Enter the output file name: "
-    hFlush stdout
-    z <- getLine
-    putStrLn c
-    writeFile z c
+help :: IO ()
+help = putStrLn helpMessage
+
+helpMessage :: String
+helpMessage = "Usage of JSON pretty printer:\n\
+\ --from string\n\
+\     The input json file\n\
+\ --to string\n\
+\     Optional: if not specified, will be printed to console\n\
+\ --help\n\
+\     Display this information\n\
+\ --version\n\
+\     Display the version number"
+
+main' :: [String] -> IO ()
+main' args = do
+  from <- parseInputFile args
+  to <- parseOutputFile args
+  case from of
+    "" -> putStrLn "No input file specified. Use --help to see available options"
+    x  -> case to of
+            "" -> printToOutput x
+            y -> printToFile x y
+
+printToOutput :: FilePath -> IO ()
+printToOutput x = do
+  y <- readFile x
+  let c = printJSON (parse json y)
+  putStrLn c
+
+printToFile :: FilePath -> FilePath -> IO ()
+printToFile x y = do
+  z <- readFile x
+  let c = printJSON (parse json z)
+  writeFile y c
+
+parseInputFile :: [String] -> IO String
+parseInputFile ("--from" : inputFile : _) = pure inputFile
+parseInputFile (_ : xs) = parseInputFile xs
+parseInputFile [] = pure ""
+
+parseOutputFile :: [String] -> IO String
+parseOutputFile ("--to" : outputFile : _) = pure outputFile
+parseOutputFile (_ : xs) = parseOutputFile xs
+parseOutputFile [] = pure ""
 
 newtype Parser a = P { parse :: String -> ParseResult a}
 
