@@ -17,6 +17,7 @@ app = do
   case args of
     [] -> help
     ["--help"] -> help
+    ["--version"] -> putStrLn "JsonPP version 0.1.0.0"
     _ -> main' args
 
 help :: IO ()
