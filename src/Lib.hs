@@ -160,7 +160,7 @@ choice :: [Parser a] -> Parser a
 choice = asum
 
 between :: Char -> Char -> Parser a -> Parser a
-between a b c = charTok a *> c <* charTok b
+between a b c = charTok a *> spaces *> c <* charTok b
 
 sepBy :: Char -> Parser a -> Parser [a]
 sepBy c a = (:) <$> a <*> list (charTok c >> spaces >> a)
