@@ -110,3 +110,17 @@ spec = do
             show (parse (satisfyAll [isAlpha, isUpper]) "ABCD") `shouldBe` "Result >'A'< BCD"
         it "returns an error if the first character doesn't satisfy any condition" $
             onErrorResult (satisfyAll [isAlpha, isUpper]) "aBCD" `shouldBe` True
+
+    describe "jsonNull" $ do
+        it "returns a parser that matches a json null value" $
+            onErrorResult jsonNull "null" `shouldBe` False
+        it "returns an error if a json null value isn't present" $
+            onErrorResult jsonNull "Null" `shouldBe` True
+
+    describe "jsonBool" $ do
+        it "returns a parser that matches a json true value" $
+            onErrorResult jsonBool "true" `shouldBe` False
+        it "returns a parser that matches a json false value" $
+            onErrorResult jsonBool "false" `shouldBe` False
+        it "returns an error if a json boolean value isn't present" $
+            onErrorResult jsonBool "True" `shouldBe` True
