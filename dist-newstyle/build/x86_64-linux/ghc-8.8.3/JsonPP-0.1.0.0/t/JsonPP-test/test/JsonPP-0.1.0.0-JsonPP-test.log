@@ -1,0 +1,68 @@
+Test suite JsonPP-test: RUNNING...
+
+Lib
+  valueParser
+    returns a parser that always a success and returns the same value
+      +++ OK, passed 100 tests.
+    returns a parser that consumes no input
+      +++ OK, passed 100 tests.
+  satisfy
+    returns a parser that checks for the given condition
+    returns an error on unexpected input
+  is
+    returns a parser that checks for the given character
+    returns an error on unexpected input
+  string
+    returns a parser that checks for the given string
+    returns an error on unexpected input
+  list1
+    returns a parser that checks for one or more occurrences
+    returns an error on no match
+  list
+    returns a parser that checks for zero or more occurrences
+    returns a success even on no match
+  space
+    returns a parser that checks for a space character
+    returns a parser that checks for a space character
+    returns an error on no space character
+  spaces
+    returns a parser that checks for zero or more spaces
+    returns no error when no space character is given
+  charTok
+    returns a parser that ignores the initial spaces and checks for the given character
+    returns an error if character is not found after zero or more spaces
+  stringTok
+    returns a parser that ignores the initial spaces and checks for the given string
+    returns an error if string is not found after zero or more spaces
+  choice
+    returns a parser that matches input to any one of input parsers
+    returns an error if none of the parsers match
+  between
+    returns a parser that matches the last parser to the string between the given characters while ignoring whitespace
+    returns an error if the characters are not present
+    returns an error if the parser doesn't match the string in between
+  sepBy
+    returns a parser that matches input repeatedly to a string with matching strings seperated by given character
+    returns an error if the beginning isn't matched by the parser given
+  betweenSepBy
+    returns a parser that matches given parser to a string within given characters and separated by the given character
+    returns an error if the beginning isn't matched by the parser given
+    returns an error if one of the enclosing characters is missing
+  noneOf
+    returns a parser that matches input containing none of the characters from the given string
+    returns an error if the first character is present within the given list
+  satisfyAll
+    returns a parser that matches input character which satisfies all given conditions
+    returns an error if the first character doesn't satisfy any condition
+  jsonNull
+    returns a parser that matches a json null value
+    returns an error if a json null value isn't present
+  jsonBool
+    returns a parser that matches a json true value
+    returns a parser that matches a json false value
+    returns an error if a json boolean value isn't present
+
+Finished in 0.0215 seconds
+40 examples, 0 failures
+Test suite JsonPP-test: PASS
+Test suite logged to: /home/oga_tatsumi/projects/JsonPP/dist-newstyle/build/x86_64-linux/ghc-8.8.3/JsonPP-0.1.0.0/t/JsonPP-test/test/JsonPP-0.1.0.0-JsonPP-test.log
